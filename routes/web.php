@@ -124,32 +124,38 @@ require __DIR__ . '/auth.php';
 
 Route::get('/setup-db', function () {
     try {
-        // Esto crea las tablas y ejecuta tu DatabaseSeeder (Roles y Admin)
+        // 1. Limpiamos base de datos y ejecutamos seeders
         \Artisan::call('migrate:fresh --seed');
-        return "¡Base de datos y Roles creados! Ahora loguéate con: admin@laboratorio.com y contraseña: password";
+        // 2. Limpiamos la caché de permisos de Spatie (Vital)
+        \Artisan::call('permission:cache-reset');
+
+        return "¡Base de datos limpia y Roles creados! Ahora ve a /setup-admin";
     }
     catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
+        return "Error en DB: " . $e->getMessage();
     }
 });
 
 Route::get('/setup-admin', function () {
     try {
-        // Buscamos al admin que crea tu Seeder y le aseguramos el rol
-        $user = \App\Models\User::where('email', 'admin@laboratorio.com')->first();
+        // Forzamos la creación del rol por si el seeder falló
+        $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
 
-        if (!$user) {
-            $user = \App\Models\User::create([
-                'name' => 'Administrador Joel Dent',
-                'email' => 'admin@laboratorio.com',
-                'password' => bcrypt('password'),
-            ]);
-        }
+        // Buscamos o creamos al usuario administrador
+        $user = \App\Models\User::firstOrCreate(
+        ['email' => 'admin@laboratorio.com'],
+        [
+            'name' => 'Administrador Joel Dent',
+            'password' => bcrypt('password'),
+        ]
+        );
 
-        $user->assignRole('Admin');
-        return "Rol 'Admin' vinculado a admin@laboratorio.com. ¡Ya puedes entrar!";
+        // Le asignamos el rol
+        $user->assignRole($role);
+
+        return "¡LOGRADO! Rol 'Admin' vinculado a admin@laboratorio.com. Ya puedes entrar al login.";
     }
     catch (\Exception $e) {
-        return "Error: " . $e->getMessage() . " (Asegúrate de haber corrido /setup-db primero)";
+        return "Error en Admin: " . $e->getMessage();
     }
 });
