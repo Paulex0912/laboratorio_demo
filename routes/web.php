@@ -31,15 +31,15 @@ Route::middleware('auth')->group(function () {
                 Route::resource('admin/employees', \App\Http\Controllers\Admin\EmployeeController::class)->names('admin.employees');
                 Route::resource('admin/suppliers', \App\Http\Controllers\Admin\SupplierController::class)->names('admin.suppliers');
                 Route::resource('admin/purchases', \App\Http\Controllers\Admin\PurchaseOrderController::class)->names('admin.purchases');
-                
-                Route::get('admin/bills/calendar', [\App\Http\Controllers\Admin\BillController::class, 'calendar'])->name('admin.bills.calendar');
-                Route::get('admin/api/bills-calendar', [\App\Http\Controllers\Admin\BillController::class, 'calendarData'])->name('api.bills.calendar');
+
+                Route::get('admin/bills/calendar', [\App\Http\Controllers\Admin\BillController::class , 'calendar'])->name('admin.bills.calendar');
+                Route::get('admin/api/bills-calendar', [\App\Http\Controllers\Admin\BillController::class , 'calendarData'])->name('api.bills.calendar');
                 Route::resource('admin/bills', \App\Http\Controllers\Admin\BillController::class)->names('admin.bills');
                 Route::resource('admin/attendances', \App\Http\Controllers\Admin\AttendanceController::class)->names('admin.attendances')->only(['index']);
                 Route::resource('admin/payrolls', \App\Http\Controllers\Admin\PayrollController::class)->names('admin.payrolls')->only(['index', 'show']);
                 Route::post('admin/work_types/import', [\App\Http\Controllers\WorkTypeController::class , 'import'])->name('work_types.import');
                 Route::resource('admin/work_types', \App\Http\Controllers\WorkTypeController::class)->names('work_types')->except(['show']);
-                
+
                 // Mantenedor de Categorías Generales
                 Route::resource('admin/general_categories', \App\Http\Controllers\Admin\GeneralCategoryController::class)->names('admin.general_categories')->except(['show']);
             }
@@ -84,7 +84,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/banks/{bank}/movements', [\App\Http\Controllers\Finance\BankController::class , 'storeMovement'])->name('banks.storeMovement');
             Route::post('/banks/{bank}/import', [\App\Http\Controllers\Finance\BankController::class , 'import'])->name('banks.import');
             Route::post('/banks/movements/{movement}/toggle-reconciled', [\App\Http\Controllers\Finance\BankController::class , 'toggleReconciled'])->name('banks.movements.toggleReconciled');
-            
+
             // Conciliación
             Route::get('/reconciliation', [\App\Http\Controllers\Finance\ReconciliationController::class , 'index'])->name('reconciliation.index');
 
@@ -121,3 +121,16 @@ Route::middleware('auth')->group(function () {
     });
 
 require __DIR__ . '/auth.php';
+Route::get('/setup-admin', function () {
+    try {
+        $user = \App\Models\User::create([
+            'name' => 'Admin Joel Dent',
+            'email' => 'admin@joeldent.com',
+            'password' => bcrypt('clave1234'),
+        ]);
+        return "Usuario creado con éxito. Ya puedes ir al login con admin@joeldent.com";
+    }
+    catch (\Exception $e) {
+        return "El usuario ya existe o hubo un error: " . $e->getMessage();
+    }
+});
