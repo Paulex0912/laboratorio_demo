@@ -27,3 +27,6 @@ RUN chown -R www-data:www-data /var/www/html \
 
 # 6. Inicio con limpieza de caché y migraciones
 CMD php artisan config:clear && php artisan migrate --force && apache2-foreground
+
+# ... después del COPY . .
+RUN chown -R www-data:www-data /var/www/html/public
