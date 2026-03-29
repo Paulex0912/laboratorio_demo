@@ -121,16 +121,34 @@ Route::middleware('auth')->group(function () {
     });
 
 require __DIR__ . '/auth.php';
+
+Route::get('/setup-db', function () {
+    try {
+        // Esto crea las tablas, los roles (Admin, Técnico, etc.) y los datos iniciales
+        \Artisan::call('migrate:fresh --seed');
+        return "Base de datos limpia y ROLES cargados con éxito. Ahora ve a /setup-admin";
+    }
+    catch (\Exception $e) {
+        return " Error al cargar la base de datos: " . $e->getMessage();
+    }
+});
+
 Route::get('/setup-admin', function () {
     try {
+        // 1. Creamos el usuario
         $user = \App\Models\User::create([
             'name' => 'Admin Joel Dent',
             'email' => 'admin@joeldent.com',
             'password' => bcrypt('clave1234'),
         ]);
-        return "Usuario creado con éxito. Ya puedes ir al login con admin@joeldent.com";
+
+        // 2. LE ASIGNAMOS EL ROL (Esto es lo que activa las áreas del panel)
+        // Asegúrate de que el Seeder cree un rol llamado 'Admin'
+        $user->assignRole('Admin');
+
+        return "Usuario Admin creado y permisos asignados. Ya puedes loguearte en /login";
     }
     catch (\Exception $e) {
-        return "El usuario ya existe o hubo un error: " . $e->getMessage();
+        return "Hubo un error (quizás el rol 'Admin' no existe aún, ejecuta primero /setup-db): " . $e->getMessage();
     }
 });
