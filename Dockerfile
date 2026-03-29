@@ -23,4 +23,8 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache public/build
 
 # 6. Inicio
-CMD php artisan config:clear && php artisan migrate --force && apache2-foreground
+CMD php artisan config:clear && php artisan view:clear && php artisan migrate --force && apache2-foreground
+
+# ... después de COPY . .
+RUN chmod -R 775 public/build
+RUN chown -R www-data:www-data /var/www/html/public
