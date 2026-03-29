@@ -30,4 +30,4 @@ RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Comando de inicio con migraciones automáticas
-CMD php artisan migrate --force && apache2-foreground
+CMD php artisan config:clear && php artisan migrate --force && apache2-foreground
