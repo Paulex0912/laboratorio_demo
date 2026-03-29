@@ -6,12 +6,10 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && docker-php-ext-install pdo pdo_pgsql
 
-# Configurar el sitio de Apache para Laravel
+# Configurar Apache para Laravel
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-# Habilitar el módulo rewrite de Apache
 RUN a2enmod rewrite
 
 # Instalar Composer
@@ -24,5 +22,9 @@ COPY . .
 # Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Dar permisos a storage y cache
+# Dar permisos
 RUN chown -R www-data:www-data storage bootstrap/cache
+
+# --- EL TRUCO MÁGICO ---
+# Este comando ejecutará las migraciones automáticamente al iniciar
+CMD php artisan migrate --force && apache2-foreground
