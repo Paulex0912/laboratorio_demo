@@ -124,31 +124,32 @@ require __DIR__ . '/auth.php';
 
 Route::get('/setup-db', function () {
     try {
-        // Esto crea las tablas, los roles (Admin, Técnico, etc.) y los datos iniciales
+        // Esto crea las tablas y ejecuta tu DatabaseSeeder (Roles y Admin)
         \Artisan::call('migrate:fresh --seed');
-        return "Base de datos limpia y ROLES cargados con éxito. Ahora ve a /setup-admin";
+        return "¡Base de datos y Roles creados! Ahora loguéate con: admin@laboratorio.com y contraseña: password";
     }
     catch (\Exception $e) {
-        return " Error al cargar la base de datos: " . $e->getMessage();
+        return "Error: " . $e->getMessage();
     }
 });
 
 Route::get('/setup-admin', function () {
     try {
-        // 1. Creamos el usuario
-        $user = \App\Models\User::create([
-            'name' => 'Admin Joel Dent',
-            'email' => 'admin@joeldent.com',
-            'password' => bcrypt('clave1234'),
-        ]);
+        // Buscamos al admin que crea tu Seeder y le aseguramos el rol
+        $user = \App\Models\User::where('email', 'admin@laboratorio.com')->first();
 
-        // 2. LE ASIGNAMOS EL ROL (Esto es lo que activa las áreas del panel)
-        // Asegúrate de que el Seeder cree un rol llamado 'Admin'
+        if (!$user) {
+            $user = \App\Models\User::create([
+                'name' => 'Administrador Joel Dent',
+                'email' => 'admin@laboratorio.com',
+                'password' => bcrypt('password'),
+            ]);
+        }
+
         $user->assignRole('Admin');
-
-        return "Usuario Admin creado y permisos asignados. Ya puedes loguearte en /login";
+        return "Rol 'Admin' vinculado a admin@laboratorio.com. ¡Ya puedes entrar!";
     }
     catch (\Exception $e) {
-        return "Hubo un error (quizás el rol 'Admin' no existe aún, ejecuta primero /setup-db): " . $e->getMessage();
+        return "Error: " . $e->getMessage() . " (Asegúrate de haber corrido /setup-db primero)";
     }
 });
