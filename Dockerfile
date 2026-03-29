@@ -1,15 +1,28 @@
-FROM richarvey/php-apache-heroku:latest
+FROM php:8.2-apache
 
-# Copiar el código al servidor
-COPY . /var/www/html
+# Instalar dependencias del sistema y conector Postgres
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    unzip \
+    && docker-php-ext-install pdo pdo_pgsql
 
-# Configurar variables de entorno básicas
-ENV WEBROOT /var/www/html/public
-ENV APP_ENV production
+# Configurar el sitio de Apache para Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Instalar dependencias de PHP y Node
+# Habilitar el módulo rewrite de Apache
+RUN a2enmod rewrite
+
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copiar el proyecto
+WORKDIR /var/www/html
+COPY . .
+
+# Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader
-RUN npm install && npm run build
 
-# Dar permisos a las carpetas de Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Dar permisos a storage y cache
+RUN chown -R www-data:www-data storage bootstrap/cache
