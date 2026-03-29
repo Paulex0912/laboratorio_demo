@@ -1,0 +1,151 @@
+
+  ANY             / .......................................................... Illuminate\Routing › RedirectController
+  POST            _ignition/execute-solution ignition.executeSolution › Spatie\LaravelIgnition › ExecuteSolutionContr…
+  GET|HEAD        _ignition/health-check ....... ignition.healthCheck › Spatie\LaravelIgnition › HealthCheckController
+  POST            _ignition/update-config .... ignition.updateConfig › Spatie\LaravelIgnition › UpdateConfigController
+  GET|HEAD        admin/api/bills-calendar .................... api.bills.calendar › Admin\BillController@calendarData
+  GET|HEAD        admin/attendances ....................... admin.attendances.index › Admin\AttendanceController@index
+  GET|HEAD        admin/audit ........................................ admin.audit.index › Admin\AuditController@index
+  GET|HEAD        admin/bills ......................................... admin.bills.index › Admin\BillController@index
+  POST            admin/bills ......................................... admin.bills.store › Admin\BillController@store
+  GET|HEAD        admin/bills/calendar .......................... admin.bills.calendar › Admin\BillController@calendar
+  GET|HEAD        admin/bills/create ................................ admin.bills.create › Admin\BillController@create
+  GET|HEAD        admin/bills/{bill} .................................... admin.bills.show › Admin\BillController@show
+  PUT|PATCH       admin/bills/{bill} ................................ admin.bills.update › Admin\BillController@update
+  DELETE          admin/bills/{bill} .............................. admin.bills.destroy › Admin\BillController@destroy
+  GET|HEAD        admin/bills/{bill}/edit ............................... admin.bills.edit › Admin\BillController@edit
+  GET|HEAD        admin/employees ............................. admin.employees.index › Admin\EmployeeController@index
+  POST            admin/employees ............................. admin.employees.store › Admin\EmployeeController@store
+  GET|HEAD        admin/employees/create .................... admin.employees.create › Admin\EmployeeController@create
+  GET|HEAD        admin/employees/{employee} .................... admin.employees.show › Admin\EmployeeController@show
+  PUT|PATCH       admin/employees/{employee} ................ admin.employees.update › Admin\EmployeeController@update
+  DELETE          admin/employees/{employee} .............. admin.employees.destroy › Admin\EmployeeController@destroy
+  GET|HEAD        admin/employees/{employee}/edit ............... admin.employees.edit › Admin\EmployeeController@edit
+  GET|HEAD        admin/general_categories .... admin.general_categories.index › Admin\GeneralCategoryController@index
+  POST            admin/general_categories .... admin.general_categories.store › Admin\GeneralCategoryController@store
+  GET|HEAD        admin/general_categories/create admin.general_categories.create › Admin\GeneralCategoryController@c…
+  PUT|PATCH       admin/general_categories/{general_category} admin.general_categories.update › Admin\GeneralCategory…
+  DELETE          admin/general_categories/{general_category} admin.general_categories.destroy › Admin\GeneralCategor…
+  GET|HEAD        admin/general_categories/{general_category}/edit admin.general_categories.edit › Admin\GeneralCateg…
+  GET|HEAD        admin/payrolls ................................ admin.payrolls.index › Admin\PayrollController@index
+  GET|HEAD        admin/payrolls/{payroll} ........................ admin.payrolls.show › Admin\PayrollController@show
+  GET|HEAD        admin/purchases ........................ admin.purchases.index › Admin\PurchaseOrderController@index
+  POST            admin/purchases ........................ admin.purchases.store › Admin\PurchaseOrderController@store
+  GET|HEAD        admin/purchases/create ............... admin.purchases.create › Admin\PurchaseOrderController@create
+  GET|HEAD        admin/purchases/{purchase} ............... admin.purchases.show › Admin\PurchaseOrderController@show
+  PUT|PATCH       admin/purchases/{purchase} ........... admin.purchases.update › Admin\PurchaseOrderController@update
+  DELETE          admin/purchases/{purchase} ......... admin.purchases.destroy › Admin\PurchaseOrderController@destroy
+  GET|HEAD        admin/purchases/{purchase}/edit .......... admin.purchases.edit › Admin\PurchaseOrderController@edit
+  GET|HEAD        admin/reports ................................... admin.reports.index › Admin\ReportController@index
+  POST            admin/reports/export .......................... admin.reports.export › Admin\ReportController@export
+  GET|HEAD        admin/settings ...................................... admin.settings › Admin\SettingController@index
+  POST            admin/settings ................................ admin.settings.store › Admin\SettingController@store
+  GET|HEAD        admin/suppliers ............................. admin.suppliers.index › Admin\SupplierController@index
+  POST            admin/suppliers ............................. admin.suppliers.store › Admin\SupplierController@store
+  GET|HEAD        admin/suppliers/create .................... admin.suppliers.create › Admin\SupplierController@create
+  GET|HEAD        admin/suppliers/{supplier} .................... admin.suppliers.show › Admin\SupplierController@show
+  PUT|PATCH       admin/suppliers/{supplier} ................ admin.suppliers.update › Admin\SupplierController@update
+  DELETE          admin/suppliers/{supplier} .............. admin.suppliers.destroy › Admin\SupplierController@destroy
+  GET|HEAD        admin/suppliers/{supplier}/edit ............... admin.suppliers.edit › Admin\SupplierController@edit
+  GET|HEAD        admin/users ............................................................................ admin.users
+  GET|HEAD        admin/work_types ....................................... work_types.index › WorkTypeController@index
+  POST            admin/work_types ....................................... work_types.store › WorkTypeController@store
+  GET|HEAD        admin/work_types/create .............................. work_types.create › WorkTypeController@create
+  POST            admin/work_types/import .............................. work_types.import › WorkTypeController@import
+  PUT|PATCH       admin/work_types/{work_type} ......................... work_types.update › WorkTypeController@update
+  DELETE          admin/work_types/{work_type} ....................... work_types.destroy › WorkTypeController@destroy
+  GET|HEAD        admin/work_types/{work_type}/edit ........................ work_types.edit › WorkTypeController@edit
+  GET|HEAD        api/dashboard-stats ................................ api.dashboard.stats › DashboardController@stats
+  GET|HEAD        banks ................................................... banks.index › Finance\BankController@index
+  POST            banks ..................................... banks.storeAccount › Finance\BankController@storeAccount
+  POST            banks/movements/{movement}/toggle-reconciled banks.movements.toggleReconciled › Finance\BankControl…
+  GET|HEAD        banks/{bank} .............................................. banks.show › Finance\BankController@show
+  POST            banks/{bank}/import ................................... banks.import › Finance\BankController@import
+  POST            banks/{bank}/movements .................. banks.storeMovement › Finance\BankController@storeMovement
+  GET|HEAD        cash ..................................................... cash.index › Finance\CashController@index
+  POST            cash ..................................................... cash.store › Finance\CashController@store
+  GET|HEAD        collections ................................. collections.index › Finance\CollectionController@index
+  GET|HEAD        collections/{patient} ......................... collections.show › Finance\CollectionController@show
+  POST            collections/{patient}/apply ................. collections.store › Finance\CollectionController@store
+  GET|HEAD        confirm-password ........................ password.confirm › Auth\ConfirmablePasswordController@show
+  POST            confirm-password .......................................... Auth\ConfirmablePasswordController@store
+  GET|HEAD        dashboard .................................................... dashboard › DashboardController@index
+  GET|HEAD        delivery/{order}/sign ................... public.delivery.show › Client\OrderDeliveryController@show
+  POST            delivery/{order}/sign ................... public.delivery.sign › Client\OrderDeliveryController@sign
+  POST            email/verification-notification verification.send › Auth\EmailVerificationNotificationController@st…
+  GET|HEAD        expenses .......................................... expenses.index › Finance\ExpenseController@index
+  POST            expenses .......................................... expenses.store › Finance\ExpenseController@store
+  GET|HEAD        expenses/create ................................. expenses.create › Finance\ExpenseController@create
+  GET|HEAD        expenses/{expense} .................................. expenses.show › Finance\ExpenseController@show
+  PATCH           expenses/{expense}/approve .................... expenses.approve › Finance\ExpenseController@approve
+  PATCH           expenses/{expense}/liquidate .............. expenses.liquidate › Finance\ExpenseController@liquidate
+  PATCH           expenses/{expense}/reject ....................... expenses.reject › Finance\ExpenseController@reject
+  GET|HEAD        forgot-password ......................... password.request › Auth\PasswordResetLinkController@create
+  POST            forgot-password ............................ password.email › Auth\PasswordResetLinkController@store
+  GET|HEAD        inventory/products .................... inventory.products.index › Inventory\ProductController@index
+  POST            inventory/products .................... inventory.products.store › Inventory\ProductController@store
+  GET|HEAD        inventory/products/create ........... inventory.products.create › Inventory\ProductController@create
+  GET|HEAD        inventory/products/{product} ............ inventory.products.show › Inventory\ProductController@show
+  PUT|PATCH       inventory/products/{product} ........ inventory.products.update › Inventory\ProductController@update
+  DELETE          inventory/products/{product} ...... inventory.products.destroy › Inventory\ProductController@destroy
+  GET|HEAD        inventory/products/{product}/edit ....... inventory.products.edit › Inventory\ProductController@edit
+  GET|HEAD        invoices .......................................... invoices.index › Finance\InvoiceController@index
+  POST            invoices .......................................... invoices.store › Finance\InvoiceController@store
+  GET|HEAD        invoices/create ................................. invoices.create › Finance\InvoiceController@create
+  GET|HEAD        invoices/receivables .................. invoices.receivables › Finance\InvoiceController@receivables
+  GET|HEAD        invoices/{invoice} .................................. invoices.show › Finance\InvoiceController@show
+  PUT|PATCH       invoices/{invoice} .............................. invoices.update › Finance\InvoiceController@update
+  GET|HEAD        invoices/{invoice}/edit ............................. invoices.edit › Finance\InvoiceController@edit
+  POST            invoices/{invoice}/payments ......... invoices.storePayment › Finance\InvoiceController@storePayment
+  PATCH           invoices/{invoice}/status ........... invoices.updateStatus › Finance\InvoiceController@updateStatus
+  GET|HEAD        login ........................................... login › Auth\AuthenticatedSessionController@create
+  POST            login .................................................... Auth\AuthenticatedSessionController@store
+  POST            logout ........................................ logout › Auth\AuthenticatedSessionController@destroy
+  GET|HEAD        orders .............................................. orders.index › Reception\OrderController@index
+  POST            orders .............................................. orders.store › Reception\OrderController@store
+  GET|HEAD        orders/create ..................................... orders.create › Reception\OrderController@create
+  POST            orders/import ..................................... orders.import › Reception\OrderController@import
+  DELETE          orders/photos/{photo} ............... orders.photos.destroy › Reception\OrderController@destroyPhoto
+  GET|HEAD        orders/{order} ........................................ orders.show › Reception\OrderController@show
+  PUT|PATCH       orders/{order} .................................... orders.update › Reception\OrderController@update
+  PATCH           orders/{order}/cancel ............................. orders.cancel › Reception\OrderController@cancel
+  GET|HEAD        orders/{order}/checkout ....................... orders.checkout › Reception\OrderController@checkout
+  POST            orders/{order}/checkout ......... orders.processCheckout › Reception\OrderController@processCheckout
+  GET|HEAD        orders/{order}/edit ................................... orders.edit › Reception\OrderController@edit
+  POST            orders/{order}/photos ................... orders.photos.store › Reception\OrderController@storePhoto
+  PATCH           orders/{order}/status ................. orders.changeStatus › Reception\OrderController@changeStatus
+  PUT             password .......................................... password.update › Auth\PasswordController@update
+  GET|HEAD        patients ........................................ patients.index › Reception\PatientController@index
+  POST            patients ........................................ patients.store › Reception\PatientController@store
+  GET|HEAD        patients/create ............................... patients.create › Reception\PatientController@create
+  GET|HEAD        patients/export ............................... patients.export › Reception\PatientController@export
+  POST            patients/import ............................... patients.import › Reception\PatientController@import
+  PUT|PATCH       patients/{patient} ............................ patients.update › Reception\PatientController@update
+  GET|HEAD        patients/{patient}/edit ........................... patients.edit › Reception\PatientController@edit
+  GET|HEAD        profile ...................................................... profile.edit › ProfileController@edit
+  PATCH           profile .................................................. profile.update › ProfileController@update
+  DELETE          profile ................................................ profile.destroy › ProfileController@destroy
+  GET|HEAD        quotes .............................................. quotes.index › Reception\QuoteController@index
+  POST            quotes .............................................. quotes.store › Reception\QuoteController@store
+  GET|HEAD        quotes/create ..................................... quotes.create › Reception\QuoteController@create
+  GET|HEAD        quotes/{quote} ........................................ quotes.show › Reception\QuoteController@show
+  PUT|PATCH       quotes/{quote} .................................... quotes.update › Reception\QuoteController@update
+  DELETE          quotes/{quote} .................................. quotes.destroy › Reception\QuoteController@destroy
+  POST            quotes/{quote}/approve .......................... quotes.approve › Reception\QuoteController@approve
+  GET|HEAD        quotes/{quote}/edit ................................... quotes.edit › Reception\QuoteController@edit
+  GET|HEAD        quotes/{quote}/pdf ...................................... quotes.pdf › Reception\QuoteController@pdf
+  GET|HEAD        reconciliation ....................... reconciliation.index › Finance\ReconciliationController@index
+  GET|HEAD        register ........................................... register › Auth\RegisteredUserController@create
+  POST            register ....................................................... Auth\RegisteredUserController@store
+  POST            reset-password ................................... password.store › Auth\NewPasswordController@store
+  GET|HEAD        reset-password/{token} .......................... password.reset › Auth\NewPasswordController@create
+  GET|HEAD        technician/orders ............................. technician.orders › Technician\OrderController@index
+  POST            technician/orders/{order}/materials technician.orders.materials.store › Lab\WorkOrderMaterialContro…
+  PATCH           technician/orders/{order}/status technician.orders.status › Technician\OrderController@updateStatus
+  GET|HEAD        treasury/flow ...................................... treasury.flow › Finance\TreasuryController@flow
+  GET|HEAD        up ................................................................................................. 
+  GET|HEAD        verify-email .......................... verification.notice › Auth\EmailVerificationPromptController
+  GET|HEAD        verify-email/{id}/{hash} .......................... verification.verify › Auth\VerifyEmailController
+
+                                                                                                  Showing [147] routes
+
