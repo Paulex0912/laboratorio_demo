@@ -162,65 +162,55 @@ Route::get('/setup-admin', function () {
 });
 use App\Models\Patient;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 Route::get('/cargar-historial-2025', function () {
     $file = base_path('database/data/reporte_2025.csv');
     
-    if (!file_exists($file)) return "Error: Archivo no encontrado en " . $file;
+    if (!file_exists($file)) return "Error: El archivo no existe en la ruta.";
 
     $lines = file($file);
     if (empty($lines)) return "El archivo está vacío.";
 
+    // Tomamos las primeras 3 líneas para ver qué hay dentro
+    $muestra = array_slice($lines, 0, 3);
+    $output = "<h3>Diagnóstico de Archivo:</h3>";
+    $output .= "<pre>" . print_r($muestra, true) . "</pre>";
+
     $count = 0;
-    $debug = [];
-
     foreach ($lines as $index => $line) {
-        if ($index == 0) continue; // Saltamos títulos
+        if ($index == 0) continue; 
 
-        // Intentamos detectar el separador (coma, punto y coma o tabulación)
-        $separator = ",";
-        if (str_contains($line, ';')) $separator = ';';
-        if (str_contains($line, "\t")) $separator = "\t";
-
-        $data = str_getcsv($line, $separator);
-        
-        // DEBUG: Guardamos la primera fila de datos para verla en pantalla
-        if ($index == 1) {
-            $debug = $data;
+        // Probamos con punto y coma primero, luego coma
+        $data = str_getcsv($line, ";");
+        if (count($data) < 5) {
+            $data = str_getcsv($line, ",");
         }
 
-        // Limpiamos espacios y quitamos comillas si existen
-        $id = isset($data[0]) ? trim($data[0], " \t\n\r\0\x0B\"") : null;
-
+        // Si detecta el ID en la primera columna (índice 0)
+        $id = trim($data[0] ?? '');
         if (!empty($id) && is_numeric($id)) {
             try {
-                // Nombre del Paciente (Índice 4)
-                $nombre = !empty($data[4]) ? trim($data[4], " \"") : 'PACIENTE - ' . $id;
+                $nombre = trim($data[4] ?? 'PACIENTE GENERICO');
                 $patient = Patient::firstOrCreate(['name' => $nombre]);
 
                 DB::table('work_orders')->updateOrInsert(
-                    ['id' => (int)$id], 
+                    ['id' => (int)$id],
                     [
-                        'patient_id'    => $patient->id,
-                        'status'        => 'entregado',
-                        'type'          => $data[9] ?? 'Trabajo Dental',
-                        'amount'        => isset($data[6]) ? (float)str_replace(',', '.', $data[6]) : 0,
-                        'due_date'      => !empty($data[2]) ? Carbon::parse($data[2])->format('Y-m-d') : null,
-                        'created_at'    => !empty($data[1]) ? Carbon::parse($data[1])->format('Y-m-d') : now(),
-                        'updated_at'    => now(),
+                        'patient_id' => $patient->id,
+                        'status' => 'entregado',
+                        'type' => trim($data[9] ?? 'Trabajo Dental'),
+                        'amount' => (float)str_replace(',', '.', $data[6] ?? 0),
+                        'created_at' => now(), // Usamos now() temporalmente para evitar errores de formato de fecha
+                        'updated_at' => now(),
                     ]
                 );
                 $count++;
             } catch (\Exception $e) {
-                // Si falla una fila, seguimos
-                continue;
+                // Si falla una fila, seguimos pero guardamos el error
+                $output .= "<p style='color:red'>Error en fila $index: " . $e->getMessage() . "</p>";
             }
         }
     }
 
-    $mensaje = "Resultado: Se cargaron $count registros.<br>";
-    $mensaje .= "Estructura detectada en la primera fila: <pre>" . print_r($debug, true) . "</pre>";
-    
-    return $mensaje;
+    return $output . "<h4>Finalizado: Se lograron cargar $count registros.</h4>";
 });
