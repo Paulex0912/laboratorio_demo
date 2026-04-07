@@ -123,16 +123,17 @@ Route::middleware('auth')->group(function () {
 require __DIR__ . '/auth.php';
 
 Route::get('/setup-db', function () {
-    try {
-        // 1. Limpiamos base de datos y ejecutamos seeders
-        \Artisan::call('migrate:fresh --seed');
-        // 2. Limpiamos la caché de permisos de Spatie (Vital)
-        \Artisan::call('permission:cache-reset');
-
-        return "¡Base de datos limpia y Roles creados! Ahora ve a /setup-admin";
+    $path = base_path('database/data/reporte_2025.csv');
+    
+    if (!file_exists($path)) {
+        return "ERROR: El archivo NO existe en la ruta: " . $path;
     }
-    catch (\Exception $e) {
-        return "Error en DB: " . $e->getMessage();
+
+    try {
+        \Artisan::call('migrate:fresh --seed');
+        return "¡ÉXITO! Archivo encontrado y base de datos cargada.";
+    } catch (\Exception $e) {
+        return "Error al procesar: " . $e->getMessage();
     }
 });
 
