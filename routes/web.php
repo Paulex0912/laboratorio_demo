@@ -162,55 +162,56 @@ Route::get('/setup-admin', function () {
 });
 use App\Models\Patient;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 Route::get('/cargar-historial-2025', function () {
     $file = base_path('database/data/reporte_2025.csv');
-    
-    if (!file_exists($file)) return "Error: El archivo no existe en la ruta.";
+    if (!file_exists($file)) return "Error: Archivo no encontrado.";
 
     $lines = file($file);
-    if (empty($lines)) return "El archivo está vacío.";
-
-    // Tomamos las primeras 3 líneas para ver qué hay dentro
-    $muestra = array_slice($lines, 0, 3);
-    $output = "<h3>Diagnóstico de Archivo:</h3>";
-    $output .= "<pre>" . print_r($muestra, true) . "</pre>";
-
     $count = 0;
+
     foreach ($lines as $index => $line) {
         if ($index == 0) continue; 
 
-        // Probamos con punto y coma primero, luego coma
-        $data = str_getcsv($line, ";");
-        if (count($data) < 5) {
-            $data = str_getcsv($line, ",");
-        }
+        $separator = str_contains($line, ';') ? ';' : ',';
+        $data = str_getcsv($line, $separator);
+        $data = array_map('trim', $data);
 
-        // Si detecta el ID en la primera columna (índice 0)
-        $id = trim($data[0] ?? '');
-        if (!empty($id) && is_numeric($id)) {
+        // Según tu diagnóstico: ID está en índice 0
+        if (isset($data[0]) && is_numeric($data[0])) {
             try {
-                $nombre = trim($data[4] ?? 'PACIENTE GENERICO');
-                $patient = Patient::firstOrCreate(['name' => $nombre]);
+                // 1. Lógica de Paciente (Si el índice 4 está vacío, usamos el Doctor del índice 11)
+                $nombrePaciente = !empty($data[4]) ? $data[4] : (!empty($data[11]) ? "Pac. de Dr. " . $data[11] : "PACIENTE GENERICO");
+                
+                $patient = Patient::firstOrCreate(['name' => $nombrePaciente]);
 
+                // 2. Limpiar el monto (quitar el 'S/' y espacios)
+                $montoLimpio = 0;
+                if (isset($data[6])) {
+                    $montoLimpio = (float) filter_var($data[6], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+                }
+
+                // 3. Insertar con los índices correctos de tu imagen
                 DB::table('work_orders')->updateOrInsert(
-                    ['id' => (int)$id],
+                    ['id' => (int)$data[0]], 
                     [
-                        'patient_id' => $patient->id,
-                        'status' => 'entregado',
-                        'type' => trim($data[9] ?? 'Trabajo Dental'),
-                        'amount' => (float)str_replace(',', '.', $data[6] ?? 0),
-                        'created_at' => now(), // Usamos now() temporalmente para evitar errores de formato de fecha
-                        'updated_at' => now(),
+                        'patient_id'    => $patient->id,
+                        'status'        => 'entregado',
+                        'type'          => $data[9] ?? 'Trabajo Dental', // Índice 9: Perno Indirecto
+                        'material'      => $data[10] ?? null,            // Índice 10: Perno Muñon
+                        'amount'        => $montoLimpio,
+                        'due_date'      => !empty($data[2]) ? Carbon::parse($data[2])->format('Y-m-d') : null,
+                        'created_at'    => !empty($data[1]) ? Carbon::parse($data[1])->format('Y-m-d') : now(),
+                        'updated_at'    => now(),
                     ]
                 );
                 $count++;
             } catch (\Exception $e) {
-                // Si falla una fila, seguimos pero guardamos el error
-                $output .= "<p style='color:red'>Error en fila $index: " . $e->getMessage() . "</p>";
+                continue;
             }
         }
     }
 
-    return $output . "<h4>Finalizado: Se lograron cargar $count registros.</h4>";
+    return "¡LOGRADO! Se cargaron " . $count . " registros. Ya puedes revisar tus Órdenes de Trabajo.";
 });
