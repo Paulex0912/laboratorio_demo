@@ -13,22 +13,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Crear Roles
-        $roles = ['Admin', 'Recepción', 'Técnico', 'Tesorero'];
+        // 1. Crear Roles
+        $roles = ['Admin', 'Recepción', 'Técnico', 'Tesorero', 'Almacenero'];
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role]);
         }
 
-        // Crear usuario admin
+        // 2. Crear usuario admin principal
         $admin = User::firstOrCreate([
             'email' => 'admin@laboratorio.com',
         ], [
-            'name' => 'Administrador',
-            'password' => bcrypt('password'),
+            'name' => 'Administrador Joel Dent',
+            'password' => bcrypt('password'), // Recuerda cambiarla luego
         ]);
 
         if (!$admin->hasRole('Admin')) {
             $admin->assignRole('Admin');
         }
+
+        // 3. CARGAR HISTORIAL 2025 (Tu archivo Excel)
+        $this->call([
+            Trabajos2025Seeder::class,
+        ]);
     }
 }
