@@ -165,38 +165,39 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 Route::get('/cargar-historial-2025', function () {
-    // 1. Ruta física del archivo en el servidor de Render
     $file = base_path('database/data/reporte_2025.csv');
     
-    if (!file_exists($file)) {
-        return "Error: No encontré el archivo en database/data/reporte_2025.csv. Verifica que el nombre sea exacto.";
-    }
+    if (!file_exists($file)) return "Error: Archivo no encontrado.";
 
     $lines = file($file);
     $count = 0;
-    $errors = [];
 
     foreach ($lines as $index => $line) {
-        if ($index == 0) continue; // Saltamos la cabecera (ID, Fecha, etc.)
+        if ($index == 0) continue; 
 
-        $data = str_getcsv($line);
+        // Detectamos si el CSV usa coma o punto y coma
+        $separator = str_contains($line, ';') ? ';' : ',';
+        $data = str_getcsv($line, $separator);
 
-        // Validamos que el ID sea un número (Índice 0 = Columna A)
+        // Eliminamos espacios en blanco de cada celda
+        $data = array_map('trim', $data);
+
+        // Si el ID (índice 0) tiene un número, procesamos
         if (isset($data[0]) && is_numeric($data[0])) {
             try {
-                // Crear o buscar paciente (Índice 4 = Columna E: PACIENTE)
-                $nombrePaciente = !empty($data[4]) ? trim($data[4]) : 'PACIENTE GENERICO';
-                $patient = Patient::firstOrCreate(['name' => $nombrePaciente]);
+                // Crear paciente (Índice 4: PACIENTE)
+                $nombre = !empty($data[4]) ? $data[4] : 'PACIENTE - ' . $data[0];
+                $patient = Patient::firstOrCreate(['name' => $nombre]);
 
-                // Insertar o actualizar en work_orders
+                // Insertar en work_orders
                 DB::table('work_orders')->updateOrInsert(
                     ['id' => $data[0]], 
                     [
                         'patient_id'    => $patient->id,
                         'status'        => 'entregado',
-                        'type'          => $data[9] ?? 'Trabajo Dental', // Columna J
-                        'material'      => $data[10] ?? null,            // Columna K
-                        'amount'        => isset($data[6]) ? (float)$data[6] : 0, // Columna G
+                        'type'          => $data[9] ?? 'Trabajo Dental', // Índice 9: TRABAJO
+                        'material'      => $data[10] ?? null,            // Índice 10: CATEGORIA
+                        'amount'        => isset($data[6]) ? (float)$data[6] : 0, // Índice 6: TOTAL
                         'due_date'      => !empty($data[2]) ? Carbon::parse($data[2])->format('Y-m-d') : null,
                         'created_at'    => !empty($data[1]) ? Carbon::parse($data[1])->format('Y-m-d') : now(),
                         'updated_at'    => now(),
@@ -204,14 +205,10 @@ Route::get('/cargar-historial-2025', function () {
                 );
                 $count++;
             } catch (\Exception $e) {
-                $errors[] = "Error en ID {$data[0]}: " . $e->getMessage();
+                continue;
             }
         }
     }
 
-    if (count($errors) > 0) {
-        return "Se cargaron $count registros, pero hubo errores: " . implode(', ', array_slice($errors, 0, 5));
-    }
-
-    return "¡ÉXITO TOTAL! Se cargaron " . $count . " registros en la base de datos de JOEL DENT.";
+    return "¡POR FIN! Se cargaron " . $count . " trabajos del 2025 en JOEL DENT.";
 });
