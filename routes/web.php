@@ -160,3 +160,58 @@ Route::get('/setup-admin', function () {
         return "Error en Admin: " . $e->getMessage();
     }
 });
+use App\Models\Patient;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+Route::get('/cargar-historial-2025', function () {
+    // 1. Ruta física del archivo en el servidor de Render
+    $file = base_path('database/data/reporte_2025.csv');
+    
+    if (!file_exists($file)) {
+        return "Error: No encontré el archivo en database/data/reporte_2025.csv. Verifica que el nombre sea exacto.";
+    }
+
+    $lines = file($file);
+    $count = 0;
+    $errors = [];
+
+    foreach ($lines as $index => $line) {
+        if ($index == 0) continue; // Saltamos la cabecera (ID, Fecha, etc.)
+
+        $data = str_getcsv($line);
+
+        // Validamos que el ID sea un número (Índice 0 = Columna A)
+        if (isset($data[0]) && is_numeric($data[0])) {
+            try {
+                // Crear o buscar paciente (Índice 4 = Columna E: PACIENTE)
+                $nombrePaciente = !empty($data[4]) ? trim($data[4]) : 'PACIENTE GENERICO';
+                $patient = Patient::firstOrCreate(['name' => $nombrePaciente]);
+
+                // Insertar o actualizar en work_orders
+                DB::table('work_orders')->updateOrInsert(
+                    ['id' => $data[0]], 
+                    [
+                        'patient_id'    => $patient->id,
+                        'status'        => 'entregado',
+                        'type'          => $data[9] ?? 'Trabajo Dental', // Columna J
+                        'material'      => $data[10] ?? null,            // Columna K
+                        'amount'        => isset($data[6]) ? (float)$data[6] : 0, // Columna G
+                        'due_date'      => !empty($data[2]) ? Carbon::parse($data[2])->format('Y-m-d') : null,
+                        'created_at'    => !empty($data[1]) ? Carbon::parse($data[1])->format('Y-m-d') : now(),
+                        'updated_at'    => now(),
+                    ]
+                );
+                $count++;
+            } catch (\Exception $e) {
+                $errors[] = "Error en ID {$data[0]}: " . $e->getMessage();
+            }
+        }
+    }
+
+    if (count($errors) > 0) {
+        return "Se cargaron $count registros, pero hubo errores: " . implode(', ', array_slice($errors, 0, 5));
+    }
+
+    return "¡ÉXITO TOTAL! Se cargaron " . $count . " registros en la base de datos de JOEL DENT.";
+});
